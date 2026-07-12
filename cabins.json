@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Cabaña Arrayán",
+    "image": "https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?auto=format&fit=crop&w=900&q=84",
+    "description": "Cálida cabaña para dos personas, con ventanales al bosque, cocina equipada y hogar a leña.",
+    "price": 78000,
+    "discount": 10,
+    "offer": "Escapada romántica",
+    "category": "couples",
+    "capacity": 2,
+    "rating": 4.9
+  },
+  {
+    "id": 2,
+    "name": "Cabaña Coihue",
+    "image": "https://images.unsplash.com/photo-1542718610-a1d656d1884c?auto=format&fit=crop&w=900&q=84",
+    "description": "Amplia cabaña familiar con dos habitaciones, parrilla privada y vistas panorámicas.",
+    "price": 112000,
+    "discount": 0,
+    "offer": "",
+    "category": "family",
+    "capacity": 5,
+    "rating": 4.8
+  },
+  {
+    "id": 3,
+    "name": "Cabaña Lenga",
+    "image": "https://images.unsplash.com/photo-1520984032042-162d526883e0?auto=format&fit=crop&w=900&q=84",
+    "description": "Diseño moderno integrado al paisaje, deck exterior y bañera con vista a las montañas.",
+    "price": 99000,
+    "discount": 15,
+    "offer": "15% temporada baja",
+    "category": "couples",
+    "capacity": 2,
+    "rating": 5
+  },
+  {
+    "id": 4,
+    "name": "Cabaña Ciprés",
+    "image": "https://images.unsplash.com/photo-1473445361085-b9a07f55608b?auto=format&fit=crop&w=900&q=84",
+    "description": "Comodidad para toda la familia, tres ambientes, juegos de mesa y jardín cercado.",
+    "price": 126000,
+    "discount": 8,
+    "offer": "Semana en familia",
+    "category": "family",
+    "capacity": 6,
+    "rating": 4.7
+  },
+  {
+    "id": 5,
+    "name": "Cabaña Ñire",
+    "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=84",
+    "description": "Refugio íntimo de estilo rústico, cama king, desayuno artesanal y patio privado.",
+    "price": 84000,
+    "discount": 0,
+    "offer": "",
+    "category": "couples",
+    "capacity": 2,
+    "rating": 4.9
+  },
+  {
+    "id": 6,
+    "name": "Cabaña Maitén",
+    "image": "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?auto=format&fit=crop&w=900&q=84",
+    "description": "Cabaña luminosa para grupos, cocina completa, gran comedor y acceso directo al sendero.",
+    "price": 138000,
+    "discount": 12,
+    "offer": "4 noches al precio de 3",
+    "category": "family",
+    "capacity": 6,
+    "rating": 4.8
+  }
+]

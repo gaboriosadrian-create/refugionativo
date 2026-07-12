@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1783889906972,
+    "cabinId": 1,
+    "name": "Sofía Martínez",
+    "phone": "+54 9 11 4522 1098",
+    "email": "sofia@example.com",
+    "guests": 2,
+    "checkIn": "2026-07-16",
+    "checkOut": "2026-07-19",
+    "status": "confirmed",
+    "totalPrice": 210600,
+    "paymentMethod": "visa",
+    "paymentStatus": "paid"
+  },
+  {
+    "id": 1783889907973,
+    "cabinId": 3,
+    "name": "Daniel Rojas",
+    "phone": "+54 9 341 558 9201",
+    "email": "daniel@example.com",
+    "guests": 2,
+    "checkIn": "2026-07-22",
+    "checkOut": "2026-07-25",
+    "status": "cancelled",
+    "totalPrice": 252450,
+    "paymentMethod": "mastercard",
+    "paymentStatus": "refunded"
+  },
+  {
+    "id": 1783890421273,
+    "cabinId": 1,
+    "name": "Gabriel Rios",
+    "phone": "2617486990",
+    "email": "gaboriosadrian@gmail.com",
+    "guests": 2,
+    "checkIn": "2026-07-12",
+    "checkOut": "2026-07-13",
+    "status": "cancelled",
+    "totalPrice": 70200,
+    "paymentMethod": "visa",
+    "paymentStatus": "refunded"
+  }
+]
