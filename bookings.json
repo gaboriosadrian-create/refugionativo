@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1784731174435,
+    "cabinId": 1,
+    "name": "Sofía Martínez",
+    "phone": "+54 9 11 4522 1098",
+    "email": "sofia@example.com",
+    "guests": 2,
+    "checkIn": "2026-07-26",
+    "checkOut": "2026-07-29",
+    "status": "confirmed",
+    "totalPrice": 210600,
+    "paymentMethod": "visa",
+    "paymentStatus": "paid"
+  },
+  {
+    "id": 1784731175435,
+    "cabinId": 3,
+    "name": "Daniel Rojas",
+    "phone": "+54 9 341 558 9201",
+    "email": "daniel@example.com",
+    "guests": 2,
+    "checkIn": "2026-08-01",
+    "checkOut": "2026-08-04",
+    "status": "pending",
+    "totalPrice": 252450,
+    "paymentMethod": "mastercard",
+    "paymentStatus": "pending"
+  }
+]

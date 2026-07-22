@@ -1,0 +1,12 @@
+[
+  {
+    "id": "met_srv_1784731176577_889",
+    "timestamp": "2026-07-22T14:39:36.577Z",
+    "name": "response_time",
+    "value": 15,
+    "unit": "ms",
+    "labels": {
+      "path": "server_init"
+    }
+  }
+]

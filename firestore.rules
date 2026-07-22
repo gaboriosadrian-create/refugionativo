@@ -1,0 +1,155 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Profiles of users
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Resorts metadata and all subcollections are publicly readable and writable
+    match /resorts/{resortId} {
+      allow read, write: if true;
+
+      // Recursive wildcard for all subcollections under a resort
+      match /{allPaths=**} {
+        allow read, write: if true;
+      }
+    }
+
+    // Resort users link
+    match /resortUsers/{docId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow write: if isAuthenticated();
+    }
+
+    // Support and impersonation sessions
+    match /tenantSessions/{sessionId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Telemetry and system performance metrics
+    match /metrics/{metricId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Alert events
+    match /alerts/{alertId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Centered platform logs
+    match /platformLogs/{logId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Executive and system service status reports
+    match /serviceStatus/{statusId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Platform tenant health and monitoring summaries
+    match /tenantHealth/{healthId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Commercial Plans (pricing plans)
+    match /commercialPlans/{planId} {
+      allow read, write: if true;
+    }
+
+    // Global Enterprise & Multi-Org Collections
+    match /organizations/{orgId} {
+      allow read, write: if true;
+    }
+
+    match /brands/{brandId} {
+      allow read, write: if true;
+    }
+
+    match /organizationSettings/{settingId} {
+      allow read, write: if true;
+    }
+
+    match /organizationUsers/{userId} {
+      allow read, write: if true;
+    }
+
+    match /regionalManagers/{rmId} {
+      allow read, write: if true;
+    }
+
+    match /localization/{locId} {
+      allow read, write: if true;
+    }
+
+    match /currencies/{currId} {
+      allow read, write: if true;
+    }
+
+    match /translations/{transId} {
+      allow read, write: if true;
+    }
+
+    match /enterprisePolicies/{policyId} {
+      allow read, write: if true;
+    }
+
+    match /complianceSettings/{settingId} {
+      allow read, write: if true;
+    }
+
+    match /auditLogs/{logId} {
+      allow read, write: if true;
+    }
+
+    match /guestConsents/{consentId} {
+      allow read, write: if true;
+    }
+
+    match /observabilityLogs/{obsId} {
+      allow read, write: if true;
+    }
+
+    // Commercial Leads
+    match /commercialLeads/{leadId} {
+      allow read: if isAuthenticated();
+      allow write: if true;
+    }
+
+    // Commercial Dashboard Metrics
+    match /commercialMetrics/{metricId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Demo Requests
+    match /demoRequests/{requestId} {
+      allow read, update, delete: if isAuthenticated();
+      allow create: if true;
+    }
+
+    // Sales Pipeline
+    match /salesPipeline/{pipelineId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Billing Profiles
+    match /billingProfiles/{profileId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Customer Onboarding progress
+    match /customerOnboarding/{tenantId} {
+      allow read, write: if true;
+    }
+  }
+}

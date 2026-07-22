@@ -1,0 +1,6 @@
+{
+  "name": "Refugio Nativo",
+  "description": "Aplicación web en tiempo real para gestionar el hospedaje de huéspedes, reservas, disponibilidad de cabañas, revenue y operaciones inteligentes (Housekeeping, Mantenimiento, Incidencias y Agenda del personal).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
