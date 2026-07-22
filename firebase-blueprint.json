@@ -1,0 +1,90 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with basic personal details",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "CommercialPlan": {
+      "title": "Commercial Plan",
+      "description": "SaaS Commercial Pricing Plan",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" }
+      },
+      "required": ["id", "name", "price"]
+    },
+    "CommercialLead": {
+      "title": "Commercial Lead",
+      "description": "Commercial lead representing demo requests and prospective clients",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "contactName": { "type": "string" },
+        "companyName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "companyName", "email"]
+    },
+    "CommercialMetrics": {
+      "title": "Commercial Metrics",
+      "description": "Aggregated dashboard metrics for SaaS platform",
+      "type": "object",
+      "properties": {
+        "totalLeads": { "type": "number" },
+        "totalDemos": { "type": "number" },
+        "mrr": { "type": "number" }
+      },
+      "required": ["totalLeads"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of registered user profiles"
+    },
+    "/commercialPlans/{planId}": {
+      "schema": "CommercialPlan",
+      "description": "Collection of SaaS Commercial Pricing Plans"
+    },
+    "/commercialLeads/{leadId}": {
+      "schema": "CommercialLead",
+      "description": "Collection of commercial leads / demo requests"
+    },
+    "/commercialMetrics/{metricId}": {
+      "schema": "CommercialMetrics",
+      "description": "Aggregated metrics for the commercial dashboard"
+    },
+    "/organizations/{orgId}": {
+      "schema": "User",
+      "description": "Multi-tenant enterprise organizations"
+    },
+    "/brands/{brandId}": {
+      "schema": "User",
+      "description": "Hotel brands and chains"
+    },
+    "/organizationUsers/{userId}": {
+      "schema": "User",
+      "description": "Corporate RBAC assigned users"
+    },
+    "/complianceSettings/{settingId}": {
+      "schema": "User",
+      "description": "GDPR / LGPD / CCPA compliance configuration"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "User",
+      "description": "Immutable compliance audit trail"
+    }
+  }
+}
