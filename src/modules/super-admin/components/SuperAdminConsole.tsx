@@ -33,8 +33,12 @@ import {
   Eye,
   Settings2,
   Bell,
-  Clock
+  Clock,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Menu
 } from 'lucide-react';
+import { useSidebarCollapse } from '../../../shared/hooks/useSidebarCollapse';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { ProductionHardeningConsole } from './ProductionHardeningConsole';
 import { CommercialDashboard } from '../../commercial-platform/components/CommercialDashboard';
@@ -56,6 +60,7 @@ import { Resort } from '../../../types';
 
 export const SuperAdminConsole: React.FC = () => {
   const { user, logout } = useAuth();
+  const { isCollapsed: sidebarCollapsed, toggleCollapse: toggleSidebar } = useSidebarCollapse();
   
   // Security verification
   const isSuperAdmin = user?.email === 'gaboriosadrian@gmail.com' || (user as any)?.role === 'SUPER_ADMIN' || (user as any)?.role === 'super_admin';
@@ -373,45 +378,45 @@ export const SuperAdminConsole: React.FC = () => {
     });
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500/30">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200 selection:bg-indigo-500/30">
       
       {/* Top Warning Banner if Platform is in Maintenance */}
       {globalConfig.maintenanceMode && (
-        <div className="bg-amber-600 text-white font-bold text-xs py-2 px-4 text-center flex items-center justify-center gap-2 animate-pulse z-50">
+        <div className="bg-amber-600 text-white font-bold text-xs py-2 px-4 text-center flex items-center justify-center gap-2 animate-pulse z-30">
           <AlertTriangle className="w-4 h-4" />
           <span>SISTEMA EN MODO MANTENIMIENTO GLOBAL - Los clientes verán avisos de mantenimiento en sus portales.</span>
         </div>
       )}
 
       {/* Main Header */}
-      <header className="sticky top-0 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex items-center justify-between z-40">
+      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-3.5 flex items-center justify-between relative z-10 transition-colors duration-200">
         <div className="flex items-center gap-3">
           <div className="grid w-10 h-10 place-content-center bg-gradient-to-tr from-indigo-600 to-purple-500 text-white rounded-xl shadow-lg shadow-indigo-500/20">
             <ShieldCheck className="w-5 h-5 animate-pulse" />
           </div>
           <div>
-            <h1 className="font-display font-extrabold text-lg text-white tracking-tight flex items-center gap-2">
-              StayFlow <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-mono border border-indigo-500/30">SUPER ADMIN</span>
+            <h1 className="font-display font-extrabold text-lg text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+              StayFlow <span className="text-[10px] bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-mono border border-indigo-500/30">SUPER ADMIN</span>
             </h1>
-            <p className="text-slate-400 text-[10px] font-medium uppercase tracking-wider">Consola de Control de Plataforma SaaS</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[10px] font-medium uppercase tracking-wider">Consola de Control de Plataforma SaaS</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex flex-col items-end">
-            <span className="text-xs text-slate-200 font-semibold">{user?.displayName || 'Administrador Global'}</span>
-            <span className="text-[9px] text-indigo-400 font-mono">{user?.email}</span>
+            <span className="text-xs text-slate-800 dark:text-slate-200 font-semibold">{user?.displayName || 'Administrador Global'}</span>
+            <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-mono">{user?.email}</span>
           </div>
           <button 
             onClick={loadAllData}
-            className="p-2 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-lg transition-colors cursor-pointer"
+            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-lg transition-colors cursor-pointer"
             title="Refrescar Datos"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-indigo-400' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-indigo-600 dark:text-indigo-400' : ''}`} />
           </button>
           <button 
             onClick={() => window.location.href = '/'}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-white font-bold transition-all active:scale-95 cursor-pointer border border-slate-700"
+            className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs text-slate-800 dark:text-white font-bold transition-all active:scale-95 cursor-pointer border border-slate-200 dark:border-slate-700"
           >
             Ir a Backoffice
           </button>
@@ -422,142 +427,177 @@ export const SuperAdminConsole: React.FC = () => {
       <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
         
         {/* Sidebar Nav */}
-        <nav className="w-full lg:w-64 bg-slate-900 border-b lg:border-b-0 lg:border-r border-slate-800 p-4 flex flex-col gap-1 z-30 shrink-0">
-          <div className="text-[10px] font-bold text-slate-500 px-3 uppercase tracking-wider mb-2">Módulos de Control</div>
+        <nav className={`w-full ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'} bg-white dark:bg-slate-900 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 p-4 flex flex-col gap-1 z-10 shrink-0 transition-all duration-300 ease-in-out`}>
+          <div className="hidden lg:flex items-center justify-between pb-3 mb-2 border-b border-slate-200 dark:border-slate-800">
+            {!sidebarCollapsed && (
+              <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">
+                Módulos de Control
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              className="p-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0 mx-auto"
+              title={sidebarCollapsed ? "Expandir menú lateral" : "Contraer menú lateral"}
+              aria-label="Alternar menú lateral"
+            >
+              {sidebarCollapsed ? <PanelLeftOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> : <PanelLeftClose className="w-5 h-5 text-slate-500 dark:text-slate-400" />}
+            </button>
+          </div>
           
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="Panel de Control"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'dashboard' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <Activity className="w-4 h-4" />
-            <span>Panel de Control</span>
+            <Activity className="w-4 h-4 shrink-0" />
+            {!sidebarCollapsed && <span>Panel de Control</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('saas-commercial')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="SaaS Comercial & CRM"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'saas-commercial' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-indigo-400 animate-pulse" />
-            <span>SaaS Comercial & CRM</span>
+            <Sparkles className="w-4 h-4 text-indigo-500 dark:text-indigo-400 animate-pulse shrink-0" />
+            {!sidebarCollapsed && <span>SaaS Comercial & CRM</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('clients')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="Gestión de Clientes"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'clients' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <Building2 className="w-4 h-4" />
-            <span>Gestión de Clientes</span>
+            <Building2 className="w-4 h-4 shrink-0" />
+            {!sidebarCollapsed && <span>Gestión de Clientes</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('onboarding')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="Alta Automática (Onboard)"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'onboarding' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <Plus className="w-4 h-4 text-emerald-400" />
-            <span className="flex items-center gap-1.5">
-              <span>Alta Automática</span>
-              <span className="bg-emerald-500/20 text-emerald-300 text-[8px] font-mono px-1.5 py-0.5 rounded uppercase">Onboard</span>
-            </span>
+            <Plus className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            {!sidebarCollapsed && (
+              <span className="flex items-center gap-1.5">
+                <span>Alta Automática</span>
+                <span className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[8px] font-mono px-1.5 py-0.5 rounded uppercase">Onboard</span>
+              </span>
+            )}
           </button>
 
           <button
             onClick={() => setActiveTab('plans')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="Planes & Límites"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'plans' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <Layers className="w-4 h-4" />
-            <span>Planes & Límites</span>
+            <Layers className="w-4 h-4 shrink-0" />
+            {!sidebarCollapsed && <span>Planes & Límites</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('users')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="Gestión de Usuarios"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'users' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <Users className="w-4 h-4" />
-            <span>Gestión de Usuarios</span>
+            <Users className="w-4 h-4 shrink-0" />
+            {!sidebarCollapsed && <span>Gestión de Usuarios</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('audit')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="Auditoría Global"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'audit' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <FileSpreadsheet className="w-4 h-4" />
-            <span>Auditoría Global</span>
+            <FileSpreadsheet className="w-4 h-4 shrink-0" />
+            {!sidebarCollapsed && <span>Auditoría Global</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('health')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="Monitor de Salud"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'health' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <Server className="w-4 h-4" />
-            <span>Monitor de Salud</span>
+            <Server className="w-4 h-4 shrink-0" />
+            {!sidebarCollapsed && <span>Monitor de Salud</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('production')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="Producción & Hardening"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'production' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <ShieldCheck className="w-4 h-4" />
-            <span>Producción & Hardening</span>
+            <ShieldCheck className="w-4 h-4 shrink-0" />
+            {!sidebarCollapsed && <span>Producción & Hardening</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('config')}
-            className={`w-full text-left px-3.5 py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
+            title="Configuración Global"
+            className={`w-full text-left ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} py-3 rounded-xl font-bold text-xs flex items-center gap-3 transition-all cursor-pointer ${
               activeTab === 'config' 
-                ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' 
-                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border-l-4 border-transparent'
+                ? 'bg-indigo-50 dark:bg-indigo-600/10 border-l-4 border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-white' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border-l-4 border-transparent'
             }`}
           >
-            <Settings className="w-4 h-4" />
-            <span>Configuración Global</span>
+            <Settings className="w-4 h-4 shrink-0" />
+            {!sidebarCollapsed && <span>Configuración Global</span>}
           </button>
 
           <div className="mt-auto pt-6 border-t border-slate-800/50 hidden lg:flex flex-col gap-2 p-3">
-            <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>Motor MP: Online</span>
-            </div>
-            <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>Motor Reserva: Online</span>
-            </div>
-            <p className="text-[9px] text-slate-600 font-mono mt-1">Platform Version {globalConfig.version}</p>
+            {!sidebarCollapsed ? (
+              <>
+                <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Motor MP: Online</span>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Motor Reserva: Online</span>
+                </div>
+                <p className="text-[9px] text-slate-600 font-mono mt-1">Platform Version {globalConfig.version}</p>
+              </>
+            ) : (
+              <div className="flex justify-center py-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="SaaS Core: Online"></span>
+              </div>
+            )}
           </div>
         </nav>
 
@@ -584,69 +624,69 @@ export const SuperAdminConsole: React.FC = () => {
                 {activeTab === 'dashboard' && metrics && (
                   <div className="space-y-8">
                     <div>
-                      <h2 className="text-xl font-display font-black text-white tracking-tight">Métricas Globales de Plataforma</h2>
-                      <p className="text-slate-400 text-xs">Visión integrada del estado financiero y operativo de todos los resorts hospedados.</p>
+                      <h2 className="text-xl font-display font-black text-slate-900 dark:text-white tracking-tight">Métricas Globales de Plataforma</h2>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs">Visión integrada del estado financiero y operativo de todos los resorts hospedados.</p>
                     </div>
 
                     {/* Indicators Grid */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                       
-                      <div className="bg-slate-900 border border-slate-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-indigo-500/30 transition-colors">
+                      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-indigo-500/30 transition-colors">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full filter blur-xl group-hover:bg-indigo-500/10 transition-colors"></div>
                         <div className="flex justify-between items-start mb-4">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Clientes (Tenants)</span>
+                          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Clientes (Tenants)</span>
                           <Building2 className="w-4 h-4 text-slate-400 group-hover:text-indigo-400 transition-colors" />
                         </div>
                         <div>
-                          <div className="text-3xl font-display font-extrabold text-white tracking-tight leading-none mb-1.5">{metrics.totalClients}</div>
-                          <div className="text-[10px] text-slate-400 flex items-center gap-1">
-                            <span className="text-emerald-400 font-semibold">{metrics.activeClients} Activos</span>
+                          <div className="text-3xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">{metrics.totalClients}</div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{metrics.activeClients} Activos</span>
                             <span>•</span>
-                            <span className="text-amber-400 font-semibold">{metrics.suspendedClients} Susp.</span>
+                            <span className="text-amber-600 dark:text-amber-400 font-semibold">{metrics.suspendedClients} Susp.</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="bg-slate-900 border border-slate-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
+                      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full filter blur-xl group-hover:bg-emerald-500/10 transition-colors"></div>
                         <div className="flex justify-between items-start mb-4">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ingresos Estimados (MP)</span>
+                          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ingresos Estimados (MP)</span>
                           <DollarSign className="w-4 h-4 text-slate-400 group-hover:text-emerald-400 transition-colors" />
                         </div>
                         <div>
-                          <div className="text-3xl font-display font-extrabold text-white tracking-tight leading-none mb-1.5">
+                          <div className="text-3xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
                             {metrics.estimatedRevenue.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })}
                           </div>
-                          <div className="text-[10px] text-slate-400 flex items-center gap-1">
-                            <span className="text-slate-300 font-semibold">{metrics.completedPayments} Transacciones exitosas</span>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                            <span className="text-slate-700 dark:text-slate-300 font-semibold">{metrics.completedPayments} Transacciones exitosas</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="bg-slate-900 border border-slate-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-purple-500/30 transition-colors">
+                      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-purple-500/30 transition-colors">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full filter blur-xl group-hover:bg-purple-500/10 transition-colors"></div>
                         <div className="flex justify-between items-start mb-4">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Reservas Procesadas</span>
+                          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Reservas Procesadas</span>
                           <BookmarkCheck className="w-4 h-4 text-slate-400 group-hover:text-purple-400 transition-colors" />
                         </div>
                         <div>
-                          <div className="text-3xl font-display font-extrabold text-white tracking-tight leading-none mb-1.5">{metrics.totalReservations}</div>
-                          <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
-                            <span className="text-purple-400 font-semibold">+{metrics.dailyReservations} nuevas hoy</span>
+                          <div className="text-3xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">{metrics.totalReservations}</div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                            <span className="text-purple-600 dark:text-purple-400 font-semibold">+{metrics.dailyReservations} nuevas hoy</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="bg-slate-900 border border-slate-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-sky-500/30 transition-colors">
+                      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-sky-500/30 transition-colors">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-full filter blur-xl group-hover:bg-sky-500/10 transition-colors"></div>
                         <div className="flex justify-between items-start mb-4">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Uso de Almacenamiento</span>
+                          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Uso de Almacenamiento</span>
                           <Database className="w-4 h-4 text-slate-400 group-hover:text-sky-400 transition-colors" />
                         </div>
                         <div>
-                          <div className="text-3xl font-display font-extrabold text-white tracking-tight leading-none mb-1.5">{metrics.storageUtilization.toFixed(1)} MB</div>
-                          <div className="text-[10px] text-slate-400 flex items-center gap-1">
-                            <span className="text-sky-400 font-semibold">{metrics.totalAccommodationsCount} Alojamientos</span>
+                          <div className="text-3xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">{metrics.storageUtilization.toFixed(1)} MB</div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                            <span className="text-sky-600 dark:text-sky-400 font-semibold">{metrics.totalAccommodationsCount} Alojamientos</span>
                             <span>•</span>
                             <span>{metrics.totalUsers} Usuarios</span>
                           </div>
@@ -659,15 +699,15 @@ export const SuperAdminConsole: React.FC = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       
                       {/* Live Activity Logs Feed */}
-                      <div className="bg-slate-900 border border-slate-800/80 p-6 rounded-2xl lg:col-span-2 space-y-4">
+                      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 p-6 rounded-2xl lg:col-span-2 space-y-4">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-display font-bold text-sm text-white flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-indigo-400" />
+                          <h3 className="font-display font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
                             <span>Auditoría de Actividad Reciente</span>
                           </h3>
                           <button 
                             onClick={() => setActiveTab('audit')}
-                            className="text-[10px] text-indigo-400 font-bold hover:underline"
+                            className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold hover:underline"
                           >
                             Ver todos los logs
                           </button>
@@ -675,17 +715,17 @@ export const SuperAdminConsole: React.FC = () => {
 
                         <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2">
                           {auditLogs.slice(0, 5).map(log => (
-                            <div key={log.id} className="text-xs p-3 bg-slate-950 border border-slate-800/40 rounded-xl flex items-start gap-3">
+                            <div key={log.id} className="text-xs p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/40 rounded-xl flex items-start gap-3">
                               <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0"></div>
                               <div className="flex-1 space-y-1">
                                 <div className="flex justify-between items-start text-[11px]">
-                                  <span className="font-bold text-slate-200">{log.action}</span>
+                                  <span className="font-bold text-slate-800 dark:text-slate-200">{log.action}</span>
                                   <span className="text-[9px] text-slate-500 font-mono">
                                     {new Date(log.timestamp).toLocaleTimeString()}
                                   </span>
                                 </div>
-                                <p className="text-slate-400 text-[11px]">{log.details}</p>
-                                <div className="text-[10px] font-mono text-indigo-300 flex items-center gap-1">
+                                <p className="text-slate-600 dark:text-slate-400 text-[11px]">{log.details}</p>
+                                <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-300 flex items-center gap-1">
                                   <span>ID: {log.entityId}</span>
                                   <span>•</span>
                                   <span>Por: {log.userEmail || log.userId}</span>
@@ -697,17 +737,17 @@ export const SuperAdminConsole: React.FC = () => {
                       </div>
 
                       {/* System health quick summary */}
-                      <div className="bg-slate-900 border border-slate-800/80 p-6 rounded-2xl space-y-4">
-                        <h3 className="font-display font-bold text-sm text-white flex items-center gap-2">
-                          <Server className="w-4 h-4 text-emerald-400" />
+                      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 p-6 rounded-2xl space-y-4">
+                        <h3 className="font-display font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                          <Server className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                           <span>Componentes de Plataforma</span>
                         </h3>
 
                         <div className="space-y-3">
                           {healthStatus?.components.slice(0, 3).map((comp, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-2.5 bg-slate-950/50 rounded-xl border border-slate-800/50">
+                            <div key={idx} className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-950/50 rounded-xl border border-slate-200 dark:border-slate-800/50">
                               <div className="space-y-0.5">
-                                <p className="text-xs font-semibold text-slate-300">{comp.name}</p>
+                                <p className="text-xs font-semibold text-slate-800 dark:text-slate-300">{comp.name}</p>
                                 <p className="text-[9px] text-slate-500 truncate max-w-[180px]">{comp.details}</p>
                               </div>
                               <span className={`w-2.5 h-2.5 rounded-full ${
@@ -719,7 +759,7 @@ export const SuperAdminConsole: React.FC = () => {
 
                         <button
                           onClick={() => setActiveTab('health')}
-                          className="w-full text-center py-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-xs font-bold text-indigo-400 transition-colors border border-slate-800"
+                          className="w-full text-center py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-bold text-indigo-600 dark:text-indigo-400 transition-colors border border-slate-200 dark:border-slate-800"
                         >
                           Ir al monitor completo
                         </button>
@@ -734,8 +774,8 @@ export const SuperAdminConsole: React.FC = () => {
                   <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
-                        <h2 className="text-xl font-display font-black text-white tracking-tight">Cartera de Clientes Activos</h2>
-                        <p className="text-slate-400 text-xs">Administra la base, cambia de planes, suspende o reasigna administradores.</p>
+                        <h2 className="text-xl font-display font-black text-slate-900 dark:text-white tracking-tight">Cartera de Clientes Activos</h2>
+                        <p className="text-slate-500 dark:text-slate-400 text-xs">Administra la base, cambia de planes, suspende o reasigna administradores.</p>
                       </div>
                       <button
                         onClick={() => setActiveTab('onboarding')}
@@ -747,15 +787,15 @@ export const SuperAdminConsole: React.FC = () => {
                     </div>
 
                     {/* Filter and Search Bar */}
-                    <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col xl:flex-row gap-4 items-center">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col xl:flex-row gap-4 items-center">
                       <div className="relative flex-1 w-full">
-                        <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                        <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
                         <input
                           type="text"
                           placeholder="Buscar por nombre, ID o email..."
                           value={searchQuery}
                           onChange={e => setSearchQuery(e.target.value)}
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:outline-none text-xs transition-colors"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:outline-none text-xs text-slate-800 dark:text-slate-200 transition-colors"
                         />
                       </div>
                       
@@ -763,7 +803,7 @@ export const SuperAdminConsole: React.FC = () => {
                         <select
                           value={planFilter}
                           onChange={e => setPlanFilter(e.target.value)}
-                          className="px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:outline-none text-xs text-slate-300 cursor-pointer"
+                          className="px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:outline-none text-xs text-slate-700 dark:text-slate-300 cursor-pointer"
                         >
                           <option value="all">Todos los Planes</option>
                           <option value="Starter">Starter</option>
@@ -775,7 +815,7 @@ export const SuperAdminConsole: React.FC = () => {
                         <select
                           value={statusFilter}
                           onChange={e => setStatusFilter(e.target.value)}
-                          className="px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:outline-none text-xs text-slate-300 cursor-pointer"
+                          className="px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:outline-none text-xs text-slate-700 dark:text-slate-300 cursor-pointer"
                         >
                           <option value="all">Todos los Estados</option>
                           <option value="active">Activos</option>
@@ -789,7 +829,7 @@ export const SuperAdminConsole: React.FC = () => {
                         <select
                           value={sortBy}
                           onChange={e => setSortBy(e.target.value as any)}
-                          className="px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:outline-none text-xs text-slate-300 cursor-pointer"
+                          className="px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:outline-none text-xs text-slate-700 dark:text-slate-300 cursor-pointer"
                         >
                           <option value="name">Ordenar por: Nombre</option>
                           <option value="id">Ordenar por: ID</option>
@@ -799,7 +839,7 @@ export const SuperAdminConsole: React.FC = () => {
 
                         <button
                           onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                          className="px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-850 hover:text-white text-xs text-slate-300 transition-all flex items-center gap-1.5 font-bold cursor-pointer"
+                          className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-850 text-xs text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 font-bold cursor-pointer"
                           title="Alternar Orden"
                         >
                           <span>{sortOrder === 'asc' ? 'Ascendente' : 'Descendente'}</span>
@@ -810,14 +850,14 @@ export const SuperAdminConsole: React.FC = () => {
                     {/* Tenants Table/Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {filteredTenants.map(tenant => (
-                        <div key={tenant.id} className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-sm hover:border-slate-700/80 transition-colors">
+                        <div key={tenant.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl space-y-4 shadow-sm hover:border-slate-300 dark:hover:border-slate-700/80 transition-colors">
                           <div className="flex justify-between items-start">
                             <div className="space-y-1">
-                              <h3 className="font-display font-extrabold text-sm text-white tracking-tight">{tenant.name}</h3>
-                              <p className="font-mono text-[10px] text-indigo-400">ID: {tenant.id}</p>
+                              <h3 className="font-display font-extrabold text-sm text-slate-900 dark:text-white tracking-tight">{tenant.name}</h3>
+                              <p className="font-mono text-[10px] text-indigo-600 dark:text-indigo-400">ID: {tenant.id}</p>
                             </div>
                             <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
-                              tenant.commercialStatus === 'Trial' ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20' :
+                              tenant.commercialStatus === 'Trial' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20' :
                               tenant.commercialStatus === 'Activo' ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20' :
                               tenant.commercialStatus === 'Suspendido' ? 'bg-rose-500/10 text-rose-300 border border-rose-500/20' :
                               'bg-slate-500/10 text-slate-300 border border-slate-500/20'

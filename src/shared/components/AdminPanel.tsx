@@ -47,8 +47,12 @@ import {
   TrendingUp,
   Wrench,
   LineChart,
-  BarChart
+  BarChart,
+  Menu,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
+import { useSidebarCollapse } from '../hooks/useSidebarCollapse';
 import { Cabin, Booking, AppSettings, AccommodationType, Amenity } from '../../types';
 import { Calendar } from './Calendar';
 import { useSettings } from '../../modules/settings/contexts/SettingsContext';
@@ -136,6 +140,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   // Resort Context
   const { resort } = useResort();
+
+  // Sidebar collapse hook
+  const { isCollapsed: sidebarCollapsed, toggleCollapse: toggleSidebar } = useSidebarCollapse();
 
   // Media Modal state
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
@@ -547,46 +554,72 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   }
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-73px)] w-full bg-slate-50">
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-73px)] w-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
       {/* Sidebar - responsive: dark vertical sidebar on desktop, compact horizontal bar on mobile */}
-      <aside className="w-full lg:w-64 bg-slate-900 text-slate-300 shrink-0 border-r border-slate-800 lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] flex flex-col z-20">
+      <aside className={`w-full ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'} bg-slate-900 dark:bg-slate-950 text-slate-300 shrink-0 border-r border-slate-800 lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] flex flex-col z-20 transition-all duration-300 ease-in-out`}>
         
-        {/* Simple Resort Summary Header in Sidebar */}
-        <div className="hidden lg:flex flex-col p-5 border-b border-slate-800 bg-slate-950/40">
-          <h3 className="font-display font-extrabold text-sm text-white truncate">{resort?.name || 'Mi Complejo'}</h3>
-          <span className="text-[10px] text-slate-400 font-bold truncate mt-0.5">{resort?.country || 'Ubicación General'}</span>
+        {/* Sidebar Header with Hamburger Toggle */}
+        <div className="hidden lg:flex items-center justify-between p-4 border-b border-slate-800 bg-slate-950/40">
+          {!sidebarCollapsed && (
+            <div className="min-w-0 pr-2">
+              <h3 className="font-display font-extrabold text-sm text-white truncate">{resort?.name || 'Mi Complejo'}</h3>
+              <span className="text-[10px] text-slate-400 font-bold truncate block">{resort?.country || 'Ubicación General'}</span>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer shrink-0 mx-auto"
+            title={sidebarCollapsed ? "Expandir menú lateral" : "Contraer menú lateral"}
+            aria-label="Alternar menú lateral"
+          >
+            {sidebarCollapsed ? <PanelLeftOpen className="w-5 h-5 text-indigo-400" /> : <PanelLeftClose className="w-5 h-5 text-slate-400" />}
+          </button>
         </div>
 
         {/* Onboarding progress inside sidebar */}
         {progress && !progress.completed && (
-          <div className="p-4 bg-amber-500/10 border border-amber-500/20 m-3 rounded-xl">
-            <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs mb-1">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Asistente de Onboarding</span>
+          sidebarCollapsed ? (
+            <div className="hidden lg:flex justify-center p-3 border-b border-slate-800/80">
+              <button
+                onClick={() => setShowWizard(true)}
+                className="p-2 rounded-xl bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 transition-all"
+                title="Asistente de Onboarding Pendiente"
+              >
+                <Sparkles className="w-4 h-4 animate-pulse" />
+              </button>
             </div>
-            <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-1.5">
-              <div 
-                className="bg-amber-400 h-full rounded-full transition-all duration-300" 
-                style={{ width: `${Math.round(((progress.currentStep - 1) / 5) * 100)}%` }}
-              />
+          ) : (
+            <div className="p-4 bg-amber-500/10 border border-amber-500/20 m-3 rounded-xl">
+              <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs mb-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Asistente de Onboarding</span>
+              </div>
+              <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-1.5">
+                <div 
+                  className="bg-amber-400 h-full rounded-full transition-all duration-300" 
+                  style={{ width: `${Math.round(((progress.currentStep - 1) / 5) * 100)}%` }}
+                />
+              </div>
+              <button
+                onClick={() => setShowWizard(true)}
+                className="w-full py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold text-[10px] rounded-lg transition-all cursor-pointer"
+              >
+                Completar Asistente
+              </button>
             </div>
-            <button
-              onClick={() => setShowWizard(true)}
-              className="w-full py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold text-[10px] rounded-lg transition-all"
-            >
-              Completar Asistente
-            </button>
-          </div>
+          )
         )}
 
         {/* Navigation buttons */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto max-lg:flex max-lg:space-y-0 max-lg:gap-1.5 max-lg:py-2.5 max-lg:px-4 max-lg:overflow-x-auto max-lg:scrollbar-none">
+        <nav className="flex-1 px-3 py-4 space-y-1 sidebar-scroll max-lg:flex max-lg:space-y-0 max-lg:gap-1.5 max-lg:py-2.5 max-lg:px-4 max-lg:overflow-x-auto max-lg:no-scrollbar">
           <button
             onClick={() => {
               setActiveTab('settings');
               setSettingsSubTab('wizard');
             }}
-            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Asistente Inicial"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'justify-between px-3.5'} py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'settings' && settingsSubTab === 'wizard'
                 ? 'bg-amber-400 text-slate-950 font-black'
                 : 'hover:bg-slate-800 hover:text-white text-slate-400'
@@ -594,196 +627,221 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           >
             <div className="flex items-center gap-3">
               <Sparkles className={`w-4 h-4 shrink-0 ${activeTab === 'settings' && settingsSubTab === 'wizard' ? 'text-slate-950' : 'text-amber-400 animate-pulse'}`} />
-              <span>Asistente Inicial</span>
+              {!sidebarCollapsed && <span>Asistente Inicial</span>}
             </div>
-            {progress && !progress.completed && (
+            {!sidebarCollapsed && progress && !progress.completed && (
               <span className="text-[9px] bg-amber-400/20 text-amber-400 px-1.5 py-0.5 rounded-full font-bold">Pendiente</span>
             )}
           </button>
 
           <button
             onClick={() => setActiveTab('cabins')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title={terminology.plural}
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'cabins' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <House className="w-4 h-4 shrink-0" />
-            <span>{terminology.plural}</span>
+            {!sidebarCollapsed && <span>{terminology.plural}</span>}
           </button>
           
           <button
             onClick={() => setActiveTab('types')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Tipos & Extras"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'types' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Tag className="w-4 h-4 shrink-0" />
-            <span>Tipos & Extras</span>
+            {!sidebarCollapsed && <span>Tipos & Extras</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('calendar')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Calendario"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'calendar' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <CalendarIcon className="w-4 h-4 shrink-0" />
-            <span>Calendario</span>
+            {!sidebarCollapsed && <span>Calendario</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('bookings')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Reservas"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'bookings' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <FileText className="w-4 h-4 shrink-0" />
-            <span>Reservas</span>
+            {!sidebarCollapsed && <span>Reservas</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('payments')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Pagos"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'payments' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <CreditCard className="w-4 h-4 shrink-0" />
-            <span>Pagos</span>
+            {!sidebarCollapsed && <span>Pagos</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('guests')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Huéspedes"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'guests' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Users className="w-4 h-4 shrink-0" />
-            <span>Huéspedes</span>
+            {!sidebarCollapsed && <span>Huéspedes</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('guestJourney')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Check-in Digital"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'guestJourney' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Compass className="w-4 h-4 shrink-0" />
-            <span>Check-in Digital</span>
+            {!sidebarCollapsed && <span>Check-in Digital</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('pricing')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Tarifas"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'pricing' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Coins className="w-4 h-4 shrink-0" />
-            <span>Tarifas</span>
+            {!sidebarCollapsed && <span>Tarifas</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('revenue')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Revenue Engine"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'revenue' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <TrendingUp className="w-4 h-4 shrink-0" />
-            <span>Revenue Engine</span>
+            {!sidebarCollapsed && <span>Revenue Engine</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Business Intelligence"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'analytics' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <LineChart className="w-4 h-4 shrink-0" />
-            <span>Business Intelligence</span>
+            {!sidebarCollapsed && <span>Business Intelligence</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('availability')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Disponibilidad"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'availability' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Lock className="w-4 h-4 shrink-0" />
-            <span>Disponibilidad</span>
+            {!sidebarCollapsed && <span>Disponibilidad</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('operations')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Operaciones"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'operations' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Wrench className="w-4 h-4 shrink-0" />
-            <span>Operaciones</span>
+            {!sidebarCollapsed && <span>Operaciones</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('notifications')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Notificaciones"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'notifications' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Bell className="w-4 h-4 shrink-0" />
-            <span>Notificaciones</span>
+            {!sidebarCollapsed && <span>Notificaciones</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('channels')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Channel Manager"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'channels' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Shuffle className="w-4 h-4 shrink-0" />
-            <span>Channel Manager</span>
+            {!sidebarCollapsed && <span>Channel Manager</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('customerSuccess')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Soporte & CS Hub"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'customerSuccess' ? 'bg-rose-700 text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Heart className="w-4 h-4 shrink-0" />
-            <span>Soporte & CS Hub</span>
+            {!sidebarCollapsed && <span>Soporte & CS Hub</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('enterpriseGlobal')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Global Enterprise"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'enterpriseGlobal' ? 'bg-indigo-700 text-white shadow-md' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Globe className="w-4 h-4 shrink-0 text-indigo-400" />
-            <span>Global Enterprise</span>
+            {!sidebarCollapsed && <span>Global Enterprise</span>}
           </button>
 
           <button
             onClick={() => setActiveTab('settings')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
+            title="Ajustes"
+            className={`w-full flex items-center ${sidebarCollapsed ? 'lg:justify-center px-2' : 'px-3.5'} gap-3 py-2.5 rounded-xl text-xs font-semibold transition-all max-lg:flex-row max-lg:gap-1.5 max-lg:py-2 max-lg:px-3 max-lg:rounded-lg shrink-0 ${
               activeTab === 'settings' ? 'bg-forest text-white' : 'hover:bg-slate-800 hover:text-white text-slate-400'
             }`}
           >
             <Sliders className="w-4 h-4 shrink-0" />
-            <span>Ajustes</span>
+            {!sidebarCollapsed && <span>Ajustes</span>}
           </button>
         </nav>
 
         {/* Sidebar Footer */}
         <div className="hidden lg:flex p-4 border-t border-slate-800 bg-slate-950/20 flex-col gap-2">
-          <div className="flex items-center gap-2 px-1">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] text-slate-400 font-bold tracking-wider uppercase font-mono">Modo Online SaaS</span>
-          </div>
-          <button 
-            onClick={onLogout}
-            className="w-full py-2 bg-rose-500/10 hover:bg-rose-500/15 text-rose-400 font-bold text-xs rounded-xl transition-all cursor-pointer text-center"
-          >
-            Cerrar Sesión
-          </button>
+          {!sidebarCollapsed ? (
+            <>
+              <div className="flex items-center gap-2 px-1">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[10px] text-slate-400 font-bold tracking-wider uppercase font-mono">Modo Online SaaS</span>
+              </div>
+              <button 
+                onClick={onLogout}
+                className="w-full py-2 bg-rose-500/10 hover:bg-rose-500/15 text-rose-400 font-bold text-xs rounded-xl transition-all cursor-pointer text-center"
+              >
+                Cerrar Sesión
+              </button>
+            </>
+          ) : (
+            <div className="flex justify-center py-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="Modo Online SaaS" />
+            </div>
+          )}
         </div>
       </aside>
 

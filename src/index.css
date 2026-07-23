@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "DM Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Manrope", sans-serif;
@@ -21,28 +23,65 @@
   --color-warning: #c68628;
 }
 
+/* Design Tokens CSS Custom Variables for Tenant & Dark Mode Theme Engine */
+:root {
+  --bg-app: #f4f1ea;
+  --bg-surface: #ffffff;
+  --bg-surface-secondary: #f8fafc;
+  --text-main: #18211d;
+  --text-muted: #6e7772;
+  --border-color: #e4e6e2;
+  --primary-color: #173a2c;
+  --primary-hover: #24513f;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --motion-duration: 200ms;
+}
+
+.dark {
+  --bg-app: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-surface-secondary: #0f172a;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --primary-color: #6366f1;
+  --primary-hover: #4f46e5;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+}
+
 html {
   scroll-behavior: smooth;
+  transition: background-color var(--motion-duration) ease, color var(--motion-duration) ease;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  color: var(--color-ink);
+  color: var(--text-main);
   font-family: "DM Sans", sans-serif;
-  background:
-    radial-gradient(circle at 15% 15%, rgba(223, 232, 220, .8), transparent 28%),
-    radial-gradient(circle at 85% 80%, rgba(238, 218, 188, .65), transparent 25%),
-    #f4f1ea;
+  background-color: var(--bg-app);
+  transition: background-color var(--motion-duration) ease, color var(--motion-duration) ease;
 }
 
-/* Hide scrollbars for chips slider */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Hide scrollbars for sidebars and sliders while keeping full scrollability */
+.no-scrollbar::-webkit-scrollbar,
+.sidebar-scroll::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+.no-scrollbar,
+.sidebar-scroll {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+  overflow-y: auto;
 }
 
 /* Base custom styles to complement Tailwind classes */

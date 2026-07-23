@@ -194,26 +194,26 @@ export const ProductionHardeningConsole: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Tab Header Banner */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-800/60 pb-5">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800/60 pb-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 rounded-full">
+            <span className="px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase bg-indigo-500/15 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-full">
               Sprint 8.0 Complete
             </span>
-            <span className="px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase bg-emerald-500/15 border border-emerald-500/20 text-emerald-400 rounded-full">
+            <span className="px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase bg-emerald-500/15 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full">
               Enterprise Ready
             </span>
           </div>
-          <h2 className="text-xl font-display font-black text-white tracking-tight flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-indigo-400" />
+          <h2 className="text-xl font-display font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
             <span>Enterprise Hardening, Seguridad & QA</span>
           </h2>
-          <p className="text-slate-400 text-xs">Asegura la escalabilidad del sistema, mitiga riesgos del OWASP Top 10, optimiza costos de Firestore y controla feature flags.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-xs">Asegura la escalabilidad del sistema, mitiga riesgos del OWASP Top 10, optimiza costos de Firestore y controla feature flags.</p>
         </div>
 
         <button
           onClick={refreshTelemetry}
-          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold flex items-center gap-2 transition-all active:scale-95 cursor-pointer border border-slate-700"
+          className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold flex items-center gap-2 transition-all active:scale-95 cursor-pointer border border-slate-200 dark:border-slate-700"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Refrescar Telemetría</span>
@@ -221,11 +221,11 @@ export const ProductionHardeningConsole: React.FC = () => {
       </div>
 
       {/* Sub tabs navigation */}
-      <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-2">
+      <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
         <button
           onClick={() => setActiveSubTab('security')}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
-            activeSubTab === 'security' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-850 hover:text-slate-200'
+            activeSubTab === 'security' ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
@@ -235,7 +235,7 @@ export const ProductionHardeningConsole: React.FC = () => {
         <button
           onClick={() => setActiveSubTab('firestore')}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
-            activeSubTab === 'firestore' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-850 hover:text-slate-200'
+            activeSubTab === 'firestore' ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
           <Database className="w-4 h-4" />
@@ -245,7 +245,7 @@ export const ProductionHardeningConsole: React.FC = () => {
         <button
           onClick={() => setActiveSubTab('testing')}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
-            activeSubTab === 'testing' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-850 hover:text-slate-200'
+            activeSubTab === 'testing' ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
           <Code2 className="w-4 h-4" />
@@ -255,7 +255,7 @@ export const ProductionHardeningConsole: React.FC = () => {
         <button
           onClick={() => setActiveSubTab('flags')}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
-            activeSubTab === 'flags' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-850 hover:text-slate-200'
+            activeSubTab === 'flags' ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
           <Sliders className="w-4 h-4" />
@@ -265,7 +265,7 @@ export const ProductionHardeningConsole: React.FC = () => {
         <button
           onClick={() => setActiveSubTab('backups')}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
-            activeSubTab === 'backups' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-850 hover:text-slate-200'
+            activeSubTab === 'backups' ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
           <Clock className="w-4 h-4" />

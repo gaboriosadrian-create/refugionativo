@@ -10,6 +10,7 @@ import { TenantManager } from '../../../core/tenant/TenantManager';
 import { TenantConfigService, PLAN_FEATURES_MAP } from '../../../core/tenant/TenantConfigService';
 import { PermissionService } from '../../../core/security/PermissionService';
 import { RBACService } from '../../../core/security/rbacService';
+import { LoginModal } from '../components/LoginModal';
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -17,8 +18,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<AppUser | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const isAuthenticated = !!user;
+
+  const openLoginModal = () => setIsLoginModalOpen(true);
+  const closeLoginModal = () => setIsLoginModalOpen(false);
 
   const refreshUser = async () => {
     if (!user) return;
@@ -29,6 +34,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (err) {
       console.error('Error refreshing user profile:', err);
+    }
+  };
+
+  const handlePostLogin = async (result: { user: AppUser; resorts: { resort: any; role: string }[] }) => {
+    setUser(result.user);
+    if (result.resorts.length > 0) {
+      setRole(result.resorts[0].role as UserRole);
+    } else {
+      if (isFirebaseConfigured) {
+        console.log('[STAYFLOW] Seeding resort mapping during login for:', result.user.email);
+        const defaultResortsForOwner = [
+          {
+            id: `ru_${result.user.uid}_patagonia`,
+            userId: result.user.uid,
+            resortId: 'patagonia-refugio',
+            role: 'owner',
+            active: true,
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: `ru_${result.user.uid}_andes`,
+            userId: result.user.uid,
+            resortId: 'andes-glamping',
+            role: result.user.email === 'gaboriosadrian@gmail.com' ? 'admin' : 'owner',
+            active: true,
+            createdAt: new Date().toISOString()
+          }
+        ];
+        for (const ru of defaultResortsForOwner) {
+          await saveDocument(`resortUsers/${ru.id}`, ru);
+        }
+        setRole('owner' as UserRole);
+      } else {
+        setRole(null);
+      }
     }
   };
 
@@ -86,43 +126,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const result = await AuthService.loginWithGoogle();
-      setUser(result.user);
-      if (result.resorts.length > 0) {
-        setRole(result.resorts[0].role as UserRole);
-      } else {
-        if (isFirebaseConfigured) {
-          console.log('[STAYFLOW] Seeding resort mapping during login for:', result.user.email);
-          const defaultResortsForOwner = [
-            {
-              id: `ru_${result.user.uid}_patagonia`,
-              userId: result.user.uid,
-              resortId: 'patagonia-refugio',
-              role: 'owner',
-              active: true,
-              createdAt: new Date().toISOString()
-            },
-            {
-              id: `ru_${result.user.uid}_andes`,
-              userId: result.user.uid,
-              resortId: 'andes-glamping',
-              role: result.user.email === 'gaboriosadrian@gmail.com' ? 'admin' : 'owner',
-              active: true,
-              createdAt: new Date().toISOString()
-            }
-          ];
-          for (const ru of defaultResortsForOwner) {
-            await saveDocument(`resortUsers/${ru.id}`, ru);
-          }
-          setRole('owner' as UserRole);
-        } else {
-          setRole(null);
-        }
-      }
+      await handlePostLogin(result);
+      setIsLoginModalOpen(false);
     } catch (err) {
       console.error('Error logging in with Google:', err);
       throw err;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loginWithEmail = async (email: string, pass: string) => {
+    setLoading(true);
+    try {
+      const result = await AuthService.loginWithEmail(email, pass);
+      await handlePostLogin(result);
+      setIsLoginModalOpen(false);
+    } catch (err) {
+      console.error('Error logging in with Email:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendPasswordReset = async (email: string) => {
+    try {
+      await AuthService.sendPasswordReset(email);
+    } catch (err) {
+      console.error('Error sending password reset:', err);
+      throw err;
     }
   };
 
@@ -190,12 +223,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading, 
       isAuthenticated, 
       login, 
+      loginWithEmail,
+      sendPasswordReset,
       logout, 
       refreshUser, 
       setRoleForResort,
-      hasPermission
+      hasPermission,
+      isLoginModalOpen,
+      openLoginModal,
+      closeLoginModal
     }}>
       {children}
+      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </AuthContext.Provider>
   );
 };
@@ -203,3 +242,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export { useAuth } from '../hooks/useAuth';
 
 export default AuthContext;
+

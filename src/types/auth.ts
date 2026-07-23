@@ -21,8 +21,13 @@ export interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   login: () => Promise<void>;
+  loginWithEmail: (email: string, pass: string) => Promise<void>;
+  sendPasswordReset: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   setRoleForResort: (resortId: string) => Promise<void>;
   hasPermission: (permissionId: string) => boolean;
+  isLoginModalOpen: boolean;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
 }

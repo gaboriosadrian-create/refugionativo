@@ -237,7 +237,7 @@ export const CommercialWebsite: React.FC<{
             </div>
             
             <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-slate-900 leading-[1.1] tracking-tight">
-              El motor operativo para tu <span className="text-forest underline decoration-orange/50 decoration-wavy">Complejo Turístico</span>
+              El motor operativo para tu <span className="text-forest">Complejo Turístico</span>
             </h1>
             
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl">

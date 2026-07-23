@@ -58,6 +58,7 @@ import {
 } from './modules/public-portal';
 import { BookingRequestForm } from './modules/public-booking';
 import { Globe, ChevronDown, LogOut, Settings2, User, Sparkles } from 'lucide-react';
+import { UserProfileMenu } from './shared/components/UserProfileMenu';
 
 export default function App() {
   const { user, login, logout, role } = useAuth();
@@ -390,14 +391,14 @@ export default function App() {
     return (
       <ProtectedRoute>
         <AppErrorBoundary>
-          <div className="w-full min-h-screen bg-slate-50 flex flex-col font-sans">
+          <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
             {/* Top Bar / Header of Admin Panel */}
-            <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 shadow-sm px-6 py-4 flex justify-between items-center">
+            <header className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm px-6 py-3.5 flex justify-between items-center transition-colors duration-200">
               <div className="flex items-center gap-3">
                 <span className="flex items-center justify-center w-10 h-10 bg-forest text-white rounded-xl font-display font-black text-lg">SF</span>
                 <div>
-                  <h1 className="font-display font-extrabold text-md text-white leading-none">StayFlow Admin</h1>
-                  <span className="text-[10px] text-slate-400 font-bold tracking-wider uppercase">
+                  <h1 className="font-display font-extrabold text-md text-slate-900 dark:text-white leading-none">StayFlow Admin</h1>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold tracking-wider uppercase">
                     {backofficeView === 'superadmin' ? 'SaaS Super Admin Console' : `SaaS Backoffice Panel · ${resort?.name || 'Mi Complejo'}`}
                   </span>
                 </div>
@@ -410,10 +411,10 @@ export default function App() {
                     setSaasViewMode('commercial');
                     setShowBackofficeProfileMenu(false);
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-950/50 hover:bg-indigo-900 text-indigo-200 text-xs font-bold rounded-xl transition-all cursor-pointer border border-indigo-800/60 shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-200 text-xs font-bold rounded-xl transition-all cursor-pointer border border-indigo-200 dark:border-indigo-800/60 shadow-sm"
                   title="Volver a la Web SaaS comercial de StayFlow"
                 >
-                  <Sparkles className="w-4 h-4 text-indigo-400 animate-pulse" />
+                  <Sparkles className="w-4 h-4 text-indigo-500 dark:text-indigo-400 animate-pulse" />
                   <span className="hidden sm:inline">Plataforma SaaS</span>
                 </button>
 
@@ -423,7 +424,7 @@ export default function App() {
                     setAppMode('public');
                     setShowBackofficeProfileMenu(false);
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition-all cursor-pointer border border-slate-700 shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all cursor-pointer border border-slate-200 dark:border-slate-700 shadow-sm"
                   title="Ver el sitio web público"
                 >
                   <Globe className="w-4 h-4 text-forest" />
@@ -439,10 +440,10 @@ export default function App() {
                           setBackofficeView('superadmin');
                           setShowBackofficeProfileMenu(false);
                         }}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-900/40 hover:bg-indigo-950/60 text-indigo-200 text-xs font-bold rounded-xl transition-all cursor-pointer border border-indigo-700/50 shadow-sm shadow-indigo-950/20"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/40 hover:bg-indigo-100 dark:hover:bg-indigo-950/60 text-indigo-700 dark:text-indigo-200 text-xs font-bold rounded-xl transition-all cursor-pointer border border-indigo-200 dark:border-indigo-700/50 shadow-sm"
                         title="Ir a la Consola Super Admin"
                       >
-                        <Settings2 className="w-4 h-4 text-indigo-400" />
+                        <Settings2 className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
                         <span>Consola Super Admin</span>
                       </button>
                     ) : (
@@ -451,116 +452,29 @@ export default function App() {
                           setBackofficeView('admin');
                           setShowBackofficeProfileMenu(false);
                         }}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-900/40 hover:bg-emerald-950/60 text-emerald-200 text-xs font-bold rounded-xl transition-all cursor-pointer border border-emerald-700/50 shadow-sm shadow-emerald-950/20"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-900/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 text-emerald-700 dark:text-emerald-200 text-xs font-bold rounded-xl transition-all cursor-pointer border border-emerald-200 dark:border-emerald-700/50 shadow-sm"
                         title="Volver a la administración de hospedaje"
                       >
-                        <Settings2 className="w-4 h-4 text-emerald-400" />
+                        <Settings2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         <span>Administrar Complejo</span>
                       </button>
                     )}
                   </>
                 )}
 
-                {/* Profile menu dropdown button */}
-                <div className="relative">
-                  {user ? (
-                    <button
-                      onClick={() => setShowBackofficeProfileMenu(!showBackofficeProfileMenu)}
-                      className="flex items-center gap-1.5 p-1 rounded-full border border-slate-700 hover:border-slate-500 transition-all cursor-pointer bg-slate-800"
-                      aria-label="Menú de usuario backoffice"
-                    >
-                      <div className="w-[32px] h-[32px] rounded-full overflow-hidden shrink-0">
-                        {user.photoURL ? (
-                          <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="grid w-full h-full place-content-center bg-forest text-white font-bold text-xs">
-                            {user.displayName?.charAt(0).toUpperCase() || 'U'}
-                          </span>
-                        )}
-                      </div>
-                      <ChevronDown className="w-3.5 h-3.5 text-slate-400 pr-1" />
-                    </button>
-                  ) : null}
-
-                  {showBackofficeProfileMenu && user && (
-                    <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-slate-800 text-slate-100 shadow-2xl border border-slate-700 z-50 p-4 space-y-3.5 animate-fade-in">
-                      <div className="flex items-center gap-2.5 pb-2.5 border-b border-slate-700">
-                        <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-slate-700">
-                          {user.photoURL ? (
-                            <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="grid w-full h-full place-content-center bg-forest text-white font-bold text-xs">
-                              {user.displayName?.charAt(0).toUpperCase() || 'U'}
-                            </span>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="font-extrabold text-xs text-white truncate">{user.displayName}</div>
-                          <div className="text-[10px] text-slate-400 truncate">{user.email}</div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Complejo Activo</div>
-                        <div className="text-xs font-bold text-white truncate">{resort?.name || 'Mi Complejo'}</div>
-                        <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                          isSuperAdmin 
-                            ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20' 
-                            : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
-                        }`}>
-                          {backofficeRoleLabel}
-                        </span>
-                      </div>
-
-                      <div className="pt-2 border-t border-slate-700 space-y-1.5">
-                        {/* If Super Admin, show toggle links */}
-                        {isSuperAdmin && (
-                          <>
-                            {backofficeView === 'admin' ? (
-                              <button
-                                onClick={() => {
-                                  setBackofficeView('superadmin');
-                                  setShowBackofficeProfileMenu(false);
-                                }}
-                                className="w-full min-h-[36px] flex items-center gap-2 text-left px-2.5 py-1.5 text-xs font-semibold rounded-lg text-indigo-300 hover:bg-slate-700 transition-colors"
-                              >
-                                <Settings2 className="w-4 h-4 text-indigo-400" />
-                                <span>Consola Super Admin</span>
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => {
-                                  setBackofficeView('admin');
-                                  setShowBackofficeProfileMenu(false);
-                                }}
-                                className="w-full min-h-[36px] flex items-center gap-2 text-left px-2.5 py-1.5 text-xs font-semibold rounded-lg text-emerald-300 hover:bg-slate-700 transition-colors"
-                              >
-                                <Settings2 className="w-4 h-4 text-emerald-400" />
-                                <span>Administrar Complejo</span>
-                              </button>
-                            )}
-                          </>
-                        )}
-
-                        <button
-                          onClick={async () => {
-                            setShowBackofficeProfileMenu(false);
-                            await logout();
-                            setAppMode('public');
-                          }}
-                          className="w-full min-h-[36px] flex items-center gap-2 text-left px-2.5 py-1.5 text-xs font-bold text-rose-400 hover:bg-rose-950/20 rounded-lg transition-colors"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          <span>Cerrar Sesión</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {/* User Profile Menu with integrated Theme Switcher */}
+                <UserProfileMenu 
+                  currentView={backofficeView}
+                  onSwitchView={(view) => setBackofficeView(view)}
+                  onLogout={async () => {
+                    await logout();
+                    setAppMode('public');
+                  }}
+                />
               </div>
             </header>
 
-            <main className="flex-1 w-full bg-slate-50">
+            <main className="flex-1 w-full bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
               {(() => {
                 const currentTenantId = TenantManager.getCurrentTenantId();
                 if (currentTenantId) {

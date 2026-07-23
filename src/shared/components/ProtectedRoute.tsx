@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, fallback }) => {
-  const { user, role, loading: authLoading, login, logout } = useAuth();
+  const { user, role, loading: authLoading, login, openLoginModal, logout } = useAuth();
   const { resort, loading: resortLoading } = useResort();
 
   if (authLoading || resortLoading) {
@@ -35,13 +35,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, fallba
         </div>
         <h3 className="font-display font-extrabold text-xl text-ink mb-1.5">Acceso Restringido</h3>
         <p className="text-muted text-xs leading-relaxed max-w-[280px] mb-6 font-sans">
-          Debes iniciar sesión con tu cuenta de Google autorizada para acceder a esta sección de administración.
+          Debes iniciar sesión con tu cuenta autorizada para acceder a esta sección de administración.
         </p>
         <button
-          onClick={login}
+          onClick={openLoginModal || login}
           className="min-h-[46px] px-6 inline-flex items-center justify-center rounded-xl bg-forest hover:bg-forest-hover text-white font-bold text-xs transition-all active:scale-95 cursor-pointer shadow-sm"
         >
-          Iniciar sesión con Google
+          Iniciar Sesión
         </button>
       </div>
     );

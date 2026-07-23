@@ -17,39 +17,42 @@ import { WebsiteProvider } from './modules/public-portal';
 import { SearchProvider } from './modules/public-search';
 import { OnboardingProvider } from './modules/onboarding';
 import { WebsiteCMSProvider } from './modules/website-cms/contexts/WebsiteCMSContext';
+import { ThemeProvider } from './core/theme/ThemeContext';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <TenantProvider>
-        <ResortProvider>
-        <SettingsProvider>
-          <AccommodationProvider>
-            <AccommodationConfigProvider>
-              <AvailabilityProvider>
-                <MediaProvider>
-                  <StayOperationsProvider>
-                    <GuestProvider>
-                      <PricingProvider>
-                        <WebsiteProvider>
-                          <SearchProvider>
-                            <OnboardingProvider>
-                              <WebsiteCMSProvider>
-                                <App />
-                              </WebsiteCMSProvider>
-                            </OnboardingProvider>
-                          </SearchProvider>
-                        </WebsiteProvider>
-                      </PricingProvider>
-                    </GuestProvider>
-                  </StayOperationsProvider>
-                </MediaProvider>
-              </AvailabilityProvider>
-            </AccommodationConfigProvider>
-          </AccommodationProvider>
-        </SettingsProvider>
-      </ResortProvider>
-    </TenantProvider>
-  </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <TenantProvider>
+          <ResortProvider>
+          <SettingsProvider>
+            <AccommodationProvider>
+              <AccommodationConfigProvider>
+                <AvailabilityProvider>
+                  <MediaProvider>
+                    <StayOperationsProvider>
+                      <GuestProvider>
+                        <PricingProvider>
+                          <WebsiteProvider>
+                            <SearchProvider>
+                              <OnboardingProvider>
+                                <WebsiteCMSProvider>
+                                  <App />
+                                </WebsiteCMSProvider>
+                              </OnboardingProvider>
+                            </SearchProvider>
+                          </WebsiteProvider>
+                        </PricingProvider>
+                      </GuestProvider>
+                    </StayOperationsProvider>
+                  </MediaProvider>
+                </AvailabilityProvider>
+              </AccommodationConfigProvider>
+            </AccommodationProvider>
+          </SettingsProvider>
+        </ResortProvider>
+      </TenantProvider>
+    </AuthProvider>
+    </ThemeProvider>
   </StrictMode>,
 );
